@@ -1,8 +1,8 @@
 import os
 import random
 
-segfilepath=r'./VOCdevkit/VOC2007/SegmentationClass'
-saveBasePath=r"./VOCdevkit/VOC2007/ImageSets/Segmentation/"
+segfilepath = r'./VOCdevkit/VOC2007/SegmentationClass'
+saveBasePath = r"./VOCdevkit/VOC2007/ImageSets/Segmentation/"
  
 trainval_percent=1
 train_percent=0.9
@@ -13,12 +13,12 @@ for seg in temp_seg:
     if seg.endswith(".png"):
         total_seg.append(seg)
 
-num=len(total_seg)  
-list=range(num)  
-tv=int(num*trainval_percent)  
-tr=int(tv*train_percent)  
-trainval= random.sample(list,tv)  
-train=random.sample(trainval,tr)  
+num = len(total_seg)
+list = range(num)
+tv = int(num*trainval_percent)
+tr = int(tv*train_percent)
+trainval = random.sample(list,tv)
+train = random.sample(trainval,tr)
  
 print("train and val size",tv)
 print("traub suze",tr)
