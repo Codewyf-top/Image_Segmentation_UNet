@@ -20,7 +20,7 @@ class uNet(object):
         "model_image_size"  :   (512, 512, 3),
         "backbone"          :   "ECAresnet",
         "downsample_factor" :   16,
-        "num_classes"       :   3,
+        "num_classes"       :   11,
         "cuda"              :   True,
         "blend"             :   False,
     }

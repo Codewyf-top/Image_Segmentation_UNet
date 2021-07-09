@@ -190,7 +190,7 @@ if __name__ == "__main__":
     #-------------------------------#
     #   Cuda的使用
     #-------------------------------#
-    Cuda = True
+    Cuda = False
 
     model = Unet(n_classes=NUM_CLASSES).train()
     
