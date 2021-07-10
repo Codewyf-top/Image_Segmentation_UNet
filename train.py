@@ -214,11 +214,11 @@ if __name__ == "__main__":
         net = net.cuda()
 
     # 打开数据集的txt
-    with open(r"VOCdevkit/VOC2007/ImageSets/Segmentation/train.txt","r") as f:
+    with open(r"WRISTdevkit/WRIST/ImageSets/Segmentation/train.txt", "r") as f:
         train_lines = f.readlines()
 
     # 打开数据集的txt
-    with open(r"VOCdevkit/VOC2007/ImageSets/Segmentation/val.txt","r") as f:
+    with open(r"WRISTdevkit/WRIST/ImageSets/Segmentation/val.txt", "r") as f:
         val_lines = f.readlines()
         
     #------------------------------------------------------#

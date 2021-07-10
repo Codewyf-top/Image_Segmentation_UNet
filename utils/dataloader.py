@@ -109,8 +109,8 @@ class PSPnetDataset(Dataset):
         annotation_line = self.train_lines[index]
         name = annotation_line.split()[0]
         # 从文件中读取图像
-        jpg = Image.open(r"./VOCdevkit/VOC2007/JPEGImages" + '/' + name + ".png")
-        png = Image.open(r"./VOCdevkit/VOC2007/SegmentationClass" + '/' + name + ".png")
+        jpg = Image.open(r"./WRISTdevkit/WRIST/JPEGImages" + '/' + name + ".png")
+        png = Image.open(r"./WRISTdevkit/WRIST/SegmentationClass" + '/' + name + ".png")
 
         if self.random_data:
             jpg, png = self.get_random_data(jpg,png,(int(self.image_size[1]),int(self.image_size[0])))

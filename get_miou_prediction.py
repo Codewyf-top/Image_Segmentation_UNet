@@ -33,17 +33,17 @@ class miou_Pspnet(psp):
 
 psp = miou_Pspnet()
 
-image_ids = open(r"VOCdevkit\VOC2007\ImageSets\Segmentation\val.txt",'r').read().splitlines()
+image_ids = open(r"WRISTdevkit/WRIST\ImageSets\Segmentation\val.txt", 'r').read().splitlines()
 
 if not os.path.exists("./miou_pr_dir"):
     os.makedirs("./miou_pr_dir")
 
 for image_id in image_ids:
-    image_path = "./VOCdevkit/VOC2007/SegmentationClass/"+image_id+".png"
+    image_path = "./WRISTdevkit/WRIST/SegmentationClass/"+image_id+".png"
     image = Image.open(image_path)
     image.save("./miou_pr_dir copy/" + image_id + ".png")
 
-    image_path = "./VOCdevkit/VOC2007/JPEGImages/"+image_id+".png"
+    image_path = "./WRISTdevkit/WRIST/JPEGImages/"+image_id+".png"
 
     image = Image.open(image_path)
     image = psp.detect_image(image)

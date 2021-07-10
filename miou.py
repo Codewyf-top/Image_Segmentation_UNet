@@ -62,10 +62,10 @@ def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes ):
 
 
 if __name__ == "__main__":
-    gt_dir = "./VOCdevkit/VOC2007/SegmentationClass"
+    gt_dir = "WRISTdevkit/WRIST/SegmentationClass"
     pred_dir = "./miou_pr_dir"
-    png_name_list = open(r"VOCdevkit\VOC2007\ImageSets\Segmentation\val.txt",'r').read().splitlines() 
+    png_name_list = open(r"WRISTdevkit/WRIST\ImageSets\Segmentation\val.txt", 'r').read().splitlines()
     
-    num_classes = 2
+    num_classes = 11
     # name_classes = ["background","aeroplane"]
     compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes)  # 执行计算mIoU的函数
