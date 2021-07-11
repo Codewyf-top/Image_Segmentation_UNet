@@ -3,6 +3,7 @@
 # -------------------------------------#
 from unet import uNet
 from PIL import Image
+from unet import Unet
 import os
 import time
 
@@ -25,5 +26,5 @@ while True:
         print('Open Error! Try again!')
         continue
     else:
-        r_image = pspnet.detect_image(image)
+        r_image = uNet.detect_image(image)
         r_image.show()
