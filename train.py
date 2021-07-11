@@ -230,10 +230,10 @@ if __name__ == "__main__":
     #   提示OOM或者显存不足请调小Batch_size
     #------------------------------------------------------#
     if True:
-        lr = 1e-2
+        lr = 1e-1
         Init_Epoch = 0
-        Interval_Epoch = 50
-        Batch_size = 2
+        Interval_Epoch = 100
+        Batch_size = 8
         optimizer = optim.Adam(model.parameters(),lr)
         lr_scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=1,gamma=0.9)
 
