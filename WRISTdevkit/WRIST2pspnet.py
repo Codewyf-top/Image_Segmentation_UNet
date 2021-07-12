@@ -1,8 +1,8 @@
 import os
 import random 
  
-segfilepath=r'./VOCdevkit/VOC2007/SegmentationClass'
-saveBasePath=r"./VOCdevkit/VOC2007/ImageSets/Segmentation/"
+segfilepath=r'./WRIST/SegmentationClass'
+saveBasePath=r"./WRIST/ImageSets/Segmentation/"
  
 trainval_percent=1
 train_percent=0.9
