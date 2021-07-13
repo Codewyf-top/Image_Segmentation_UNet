@@ -107,13 +107,6 @@ def Frequency_Weighted_Intersection_over_Union(confusionMatrix):
             np.diag(confusionMatrix))
     FWIoU = (freq[freq > 0] * iu[freq > 0]).sum()
     return FWIoU
-def dice(confusionMatrix):  
-    #  返回交并比IoU
-    intersection = 2*np.diag(confusionMatrix)  
-    union = np.sum(confusionMatrix, axis = 1) + np.sum(confusionMatrix, axis = 0) 
-    dice = intersection / union
-    dice = np.nanmean(dice) 
-    return dice
 
 #################################################################
 #  标签图像文件夹
@@ -121,7 +114,7 @@ LabelPath = r"miou_pr_dir copy"
 #  预测图像文件夹
 PredictPath = r"miou_pr_dir"
 #  类别数目(包括背景)
-classNum = 3
+classNum = 2
 #################################################################
 
 #  获取类别颜色字典
@@ -166,9 +159,6 @@ IoU = IntersectionOverUnion(confusionMatrix)
 FWIOU = Frequency_Weighted_Intersection_over_Union(confusionMatrix)
 mIOU = MeanIntersectionOverUnion(confusionMatrix)
 f1ccore = F1Score(confusionMatrix)
-dice=dice(confusionMatrix)
-
-
 
 for i in range(colorDict_BGR.shape[0]):
     #  输出类别颜色,需要安装webcolors,直接pip install webcolors
@@ -197,5 +187,3 @@ print("mIoU:")
 print(mIOU)
 print("FWIoU:")
 print(FWIOU)
-print("dice:")
-print(dice)

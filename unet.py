@@ -1,4 +1,4 @@
-from nets.unt import Unet
+from nets.unet_model import UNet
 from torch import nn
 from PIL import Image
 from torch.autograd import Variable
@@ -16,11 +16,11 @@ class uNet(object):
     #   使其符合自己的模型
     #-----------------------------------------#
     _defaults = {
-        "model_path"        :   'logs\Epoch100-Total_Loss0.2484-Val_Loss0.2450.pth',
-        "model_image_size"  :   (512, 512, 3),
+        "model_path"        :   'logs\Epoch160-Total_Loss0.2421-Val_Loss0.2261.pth',
+        "model_image_size"  :   (256, 256, 3),
         "backbone"          :   "ECAresnet",
         "downsample_factor" :   16,
-        "num_classes"       :   11,
+        "num_classes"       :   10,
         "cuda"              :   True,
         "blend"             :   False,
     }
@@ -37,7 +37,7 @@ class uNet(object):
     #---------------------------------------------------#
     def generate(self):
         os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-        self.net = Unet(n_classes=self.num_classes)
+        self.net = UNet(n_classes=self.num_classes,n_channels=3)
         self.net = self.net.eval()
 
         state_dict = torch.load(self.model_path)
@@ -49,7 +49,7 @@ class uNet(object):
         print('{} model, anchors, and classes loaded.'.format(self.model_path))
         # 画框设置不同的颜色
         if self.num_classes<= 21:
-            self.colors = [ (0, 0, 0), (0, 255, 0), (255, 0, 0), (0, 0, 128), (128, 0, 128), (0, 128, 128), 
+            self.colors = [ (0, 0, 0), (0, 255, 0), (0, 255, 0), (0, 0, 128), (128, 0, 128), (0, 128, 128), 
                     (128, 128, 128), (64, 0, 0), (192, 0, 0), (64, 128, 0), (192, 128, 0), (64, 0, 128), (192, 0, 128), 
                     (64, 128, 128), (192, 128, 128), (0, 64, 0), (128, 64, 0), (0, 192, 0), (128, 192, 0), (0, 64, 128), (128, 64, 12)]
         else:
@@ -102,7 +102,7 @@ class uNet(object):
 
         image = Image.fromarray(np.uint8(seg_img)).resize((orininal_w,orininal_h))
         if self.blend:
-            image = Image.blend(old_img,image,0.7)
+            image = Image.blend(old_img,image,0.3)
         
         return image
 

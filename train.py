@@ -9,13 +9,9 @@ from torchvision import models
 from torch.autograd import Variable
 from PIL import Image
 from torch import nn
-from nets.unt import Unet
+from nets.unet_model import UNet
 from nets.unet_training import CE_Loss,Dice_loss
-
-import sys
-sys.path.append(r"D:\PycharmProjects\unet\unet\utils")
-from utils.metricss import f_score
-
+from utils.metrics import f_score
 from torch.utils.data import DataLoader
 from dataloader import unetDataset, unet_dataset_collate
 
@@ -140,8 +136,6 @@ def fit_one_epoch(net,epoch,epoch_size,epoch_size_val,gen,genval,Epoch,cuda,aux_
     print('Finish Validation')
     print('Epoch:'+ str(epoch+1) + '/' + str(Epoch))
     print('Total Loss: %.4f || Val Loss: %.4f ' % (total_loss/(epoch_size+1),val_toal_loss/(epoch_size_val+1)))
-
-    print('Saving state, iter:', str(epoch+1))
     totalBig_loss = ('%.4f' % (total_loss/(epoch_size+1)))
     val_loss1232= ('%.4f' % (val_toal_loss/(epoch_size_val+1)))
     file_handle2=open('train_loss.csv',mode='a+')
@@ -152,25 +146,27 @@ def fit_one_epoch(net,epoch,epoch_size,epoch_size_val,gen,genval,Epoch,cuda,aux_
     file_handle2=open('acc.csv',mode='a+')
     file_handle2.write(score+'\n')
     file_handle2.close()
+
+    print('Saving state, iter:', str(epoch+1))
     torch.save(model.state_dict(), 'logs/Epoch%d-Total_Loss%.4f-Val_Loss%.4f.pth'%((epoch+1),total_loss/(epoch_size+1),val_toal_loss/(epoch_size_val+1)))
 
 
 
 if __name__ == "__main__":
-    inputs_size = [512,512,3]
+    inputs_size = [256,256,3]
     log_dir = "logs/"   
     #---------------------#
     #   分类个数+1
     #   2+1
     #---------------------#
-    NUM_CLASSES = 11
+    NUM_CLASSES = 10
     #--------------------------------------------------------------------#
     #   建议选项：
     #   种类少（几类）时，设置为True
     #   种类多（十几类）时，如果batch_size比较大（10以上），那么设置为True
     #   种类多（十几类）时，如果batch_size比较小（10以下），那么设置为False
     #---------------------------------------------------------------------# 
-    dice_loss = True
+    dice_loss = False
     #-------------------------------#
     #   主干网络预训练权重的使用
     #  
@@ -192,7 +188,7 @@ if __name__ == "__main__":
     #-------------------------------#
     Cuda = False
 
-    model = Unet(n_classes=NUM_CLASSES).train()
+    model = UNet(n_channels=3,n_classes=NUM_CLASSES).train()
     
     #-------------------------------------------#
     #   权值文件的下载请看README
@@ -214,66 +210,34 @@ if __name__ == "__main__":
         net = net.cuda()
 
     # 打开数据集的txt
-    with open(r"WRISTdevkit/WRIST/ImageSets/Segmentation/train.txt", "r") as f:
+    with open(r"VOCdevkit/VOC2007/ImageSets/Segmentation/train.txt","r") as f:
         train_lines = f.readlines()
 
     # 打开数据集的txt
-    with open(r"WRISTdevkit/WRIST/ImageSets/Segmentation/val.txt", "r") as f:
+    with open(r"VOCdevkit/VOC2007/ImageSets/Segmentation/val.txt","r") as f:
         val_lines = f.readlines()
         
-    #------------------------------------------------------#
-    #   主干特征提取网络特征通用，冻结训练可以加快训练速度
-    #   也可以在训练初期防止权值被破坏。
-    #   Init_Epoch为起始世代
-    #   Interval_Epoch为冻结训练的世代
-    #   Epoch总训练世代
-    #   提示OOM或者显存不足请调小Batch_size
-    #------------------------------------------------------#
-    if True:
-        lr = 1e-1
-        Init_Epoch = 0
-        Interval_Epoch = 100
-        Batch_size = 8
-        optimizer = optim.Adam(model.parameters(),lr)
-        lr_scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=1,gamma=0.9)
+    
+    lr = 1e-3
+    Init_Epoch = 0
+    Interval_Epoch = 400
+    Batch_size = 2
+    optimizer = optim.Adam(model.parameters(),lr)
+    lr_scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=1,gamma=0.9)
 
-        train_dataset = unetDataset(train_lines, inputs_size, NUM_CLASSES, True)
-        val_dataset = unetDataset(val_lines, inputs_size, NUM_CLASSES, False)
-        gen = DataLoader(train_dataset, batch_size=Batch_size, num_workers=0, pin_memory=True,
+    train_dataset = unetDataset(train_lines, inputs_size, NUM_CLASSES, True)
+    val_dataset = unetDataset(val_lines, inputs_size, NUM_CLASSES, False)
+    gen = DataLoader(train_dataset, batch_size=Batch_size, num_workers=0, pin_memory=True,
                                 drop_last=True, collate_fn=unet_dataset_collate)
-        gen_val = DataLoader(val_dataset, batch_size=Batch_size, num_workers=0, pin_memory=True,
+    gen_val = DataLoader(val_dataset, batch_size=Batch_size, num_workers=4,pin_memory=True, 
                                 drop_last=True, collate_fn=unet_dataset_collate)
 
-        epoch_size      = max(1, len(train_lines)//Batch_size)
-        epoch_size_val  = max(1, len(val_lines)//Batch_size)
+    epoch_size      = max(1, len(train_lines)//Batch_size)
+    epoch_size_val  = max(1, len(val_lines)//Batch_size)
 
        
-        for epoch in range(Init_Epoch,Interval_Epoch):
-            fit_one_epoch(model,epoch,epoch_size,epoch_size_val,gen,gen_val,Interval_Epoch,Cuda,aux_branch)
-            lr_scheduler.step()
+    for epoch in range(Init_Epoch,Interval_Epoch):
+        fit_one_epoch(model,epoch,epoch_size,epoch_size_val,gen,gen_val,Interval_Epoch,Cuda,aux_branch)
+        lr_scheduler.step()
     
-    if True:
-        lr = 1e-5
-        Interval_Epoch = 50
-        Epoch = 100
-        Batch_size = 2
-        optimizer = optim.Adam(model.parameters(),lr)
-        lr_scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=1,gamma=0.9)
-
-        train_dataset = unetDataset(train_lines, inputs_size, NUM_CLASSES, True)
-        val_dataset = unetDataset(val_lines, inputs_size, NUM_CLASSES, False)
-        gen = DataLoader(train_dataset, batch_size=Batch_size, num_workers=0, pin_memory=True,
-                                drop_last=True, collate_fn=unet_dataset_collate)
-        gen_val = DataLoader(val_dataset, batch_size=Batch_size, num_workers=0,pin_memory=True,
-                                drop_last=True, collate_fn=unet_dataset_collate)
-
-        epoch_size      = max(1, len(train_lines)//Batch_size)
-        epoch_size_val  = max(1, len(val_lines)//Batch_size)
-
-        # for param in model.backbone.parameters():
-        #     param.requires_grad = True
-
-        for epoch in range(Interval_Epoch,Epoch):
-            fit_one_epoch(model,epoch,epoch_size,epoch_size_val,gen,gen_val,Epoch,Cuda,aux_branch)
-            lr_scheduler.step()
-
+   
