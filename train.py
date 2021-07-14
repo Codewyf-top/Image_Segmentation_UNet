@@ -186,7 +186,7 @@ if __name__ == "__main__":
     #-------------------------------#
     #   Cuda的使用
     #-------------------------------#
-    Cuda = False
+    Cuda = True
 
     model = UNet(n_channels=3,n_classes=NUM_CLASSES).train()
     
@@ -221,7 +221,7 @@ if __name__ == "__main__":
     lr = 1e-3
     Init_Epoch = 0
     Interval_Epoch = 400
-    Batch_size = 2
+    Batch_size = 14
     optimizer = optim.Adam(model.parameters(),lr)
     lr_scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=1,gamma=0.9)
 
